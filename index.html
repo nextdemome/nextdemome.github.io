@@ -1,0 +1,163 @@
+<div id="status"></div>
+<h1>Lives <span id="lives"></span></h1>
+<div id="buttons"></div>
+
+<script type="text/javascript">
+	// Displays buttons A to Z and attaches onclick handlers
+	function setupButtons() {
+		let buttonContainer = document.querySelector("#buttons")
+		let alph = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		for (let i = 0; i < alph.length; i++) {
+
+			// For each alphabets, create a button
+			let btn = document.createElement("button")
+			btn.innerHTML = alph[i]
+
+			// Attaches handler
+			btn.onclick = function(e) {
+
+				// Disables button when clicked
+				e.target.disabled = true
+
+				// If chosen character is included in randomWord which is generated from line 145
+				if (randomWord.includes(e.target.innerHTML)) {
+					
+					// Refer to line 84
+					status = updateStatus(randomWord, status, e.target.innerHTML)
+
+					// Refer to line 71
+					displayStatus(status)
+					if (checkWin()) {
+						alert("You Win!")
+
+						// Refer to line 102
+						disableButtons()
+					}
+
+				// If chosen character is not included in randomWord
+				} else {
+					lives--
+					displayLives()
+					if (lives == 0) {
+						alert("You lose")
+
+						// Refer to line 102
+						disableButtons()
+					}
+				}
+			}
+
+			// Insert button into page
+			buttonContainer.appendChild(btn)
+		}
+	}
+
+	// Generates a random word from a array of options
+	function generateWord() {
+		let words = ["CAR", "WIND", "FLOOR", "DOOR", "HELLO", "WORLD", "HUMAN"]
+		return words[Math.floor(Math.random() * words.length)]
+	}
+
+	// Creates a array with underscores based on randomWord generated => ["_", "_", "_", "_"]
+	function generateStatus(word) {
+		let status = []
+		for (let i = 0; i < word.length; i++) {
+			status.push("_")
+		}
+		return status
+	}
+
+	// Displays current status onto html
+	function displayStatus(status) {
+		let inner = ""
+		for (let i = 0; i < status.length; i++) {
+			inner += status[i] + " "
+		}
+		document.querySelector("#status").innerHTML = inner
+	}
+
+	// Updates current status with a given character
+	// status = ["_", "_", "_"]
+	// word = "CAR"
+	// char = "A"
+	// newStatus = ["_", "A", "_"]
+	function updateStatus(word, status, char) {
+		for (let i = 0; i < word.length; i++) {
+			if (word[i] == char) {
+				status[i] = char
+			}
+		}
+		return status
+	}
+
+	// Check if status includes "_"
+	function checkWin() {
+		if (status.includes("_")) {
+			return false
+		}
+		return true
+	}
+
+	// Disables all the button clicks
+	function disableButtons() {
+		let buttons = document.querySelectorAll("button")
+		for (let i = 0; i < buttons.length; i++) {
+			buttons[i].disabled = true
+		}
+	}
+
+	// Displays lives on the html
+	function displayLives() {
+		document.querySelector("#lives").innerHTML = lives
+	}
+
+	// A function to randomly fill in empty spaces
+	// Optional
+	function fillRandom() {
+		let charsToFill = []
+
+		// Selects character to fill
+		// randomWord = "FLOOR"
+		// charsToFill = ["O", "O"]
+		for (let i = 0; i < Math.floor(randomWord.length / 2); i++) {
+			charsToFill.push(randomWord[Math.floor(Math.random() * randomWord.length)])
+		}
+
+		// Makes charsToFill unique
+		// charsToFill = ["O", "O"]
+		// newCharsToFill = ["O"]
+		charsToFill = Array.from(new Set(charsToFill))
+
+		// Go through the existing buttons and click on the buttons that are required to fill
+		// In this case it will click on button with "O" in it, thus triggering the onclick handler of that button (Refer to line 17)
+		let buttons = document.querySelectorAll("button")
+		for (let i = 0; i < charsToFill.length; i++) {
+			for (let x = 0; x < buttons.length; x++) {
+				if (buttons[x].innerHTML == charsToFill[i]) {
+					buttons[x].click()
+					break
+				}
+			}
+		}
+	}
+
+	// Refer to line 56
+	let randomWord = generateWord()
+
+	// Refer to line 62
+	let status = generateStatus(randomWord)
+
+	let lives = 10
+
+	// Refer to line 7
+	setupButtons()
+
+	// Refer to line 71
+	displayStatus(status)
+	
+	// Refer to line 110
+	displayLives()
+
+	// Refer to line 116
+	fillRandom()
+</script>
